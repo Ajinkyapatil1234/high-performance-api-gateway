@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-backend
+    command: ["node", "dist/backend.js"]
+    environment:
+      PORT: 4000
+    ports:
+      - "4000:4000"
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    command: ["node", "dist/server.js"]
+    environment:
+      PORT: 3000
+      BACKEND_URL: http://backend:4000
+      BACKEND_TIMEOUT_MS: 5000
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+

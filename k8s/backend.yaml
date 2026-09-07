@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-backend
+  template:
+    metadata:
+      labels:
+        app: api-backend
+    spec:
+      containers:
+        - name: backend
+          image: high-performance-api-gateway_backend:latest
+          imagePullPolicy: Never
+          command: ["node", "dist/backend.js"]
+          ports:
+            - containerPort: 4000
+          readinessProbe:
+            httpGet:
+              path: /hello
+              port: 4000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /hello
+              port: 4000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-backend
+spec:
+  selector:
+    app: api-backend
+  ports:
+    - port: 4000
+      targetPort: 4000
+  type: ClusterIP

@@ -1,0 +1,6 @@
+node_modules
+dist
+.git
+*.cpuprofile
+.env
+npm-debug.log
